@@ -71,6 +71,29 @@ template <typename T>
 }
 
 template <typename T>
+::testing::AssertionResult RangesNest(const char* m_expr, const char* n_expr,
+                                      const T& outer, const T& inner) {
+  if (RangesAreNested(outer, inner))
+    return ::testing::AssertionSuccess();
+
+  return ::testing::AssertionFailure()
+         << "Range " << m_expr << " (" << outer << ") does not contain range "
+         << n_expr << " (" << inner << ")";
+}
+
+template <typename T>
+::testing::AssertionResult RangesDontNest(const char* m_expr,
+                                          const char* n_expr, const T& outer,
+                                          const T& inner) {
+  if (!RangesAreNested(outer, inner))
+    return ::testing::AssertionSuccess();
+
+  return ::testing::AssertionFailure()
+         << "Range " << m_expr << " (" << outer << ") does contain range "
+         << n_expr << " (" << inner << ")";
+}
+
+template <typename T>
 ::testing::AssertionResult RangesOverlap(const char* m_expr, const char* n_expr,
                                          const T& lhs, const T& rhs) {
   if (!RangesOverlap(lhs, lhs) || !RangesOverlap(rhs, rhs))
@@ -160,5 +183,4 @@ INSTANTIATE_TEST_CASE_P(
                      testing::Range(0, 3), testing::Range(0U, 3U),
                      testing::Range(0, 3), testing::Range(0U, 3U)));
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ThreeRangesTest);
-
 } // namespace rawspeed_test
